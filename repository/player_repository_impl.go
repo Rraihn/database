@@ -1,4 +1,4 @@
-package repository_player
+package repository
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 	"strconv"
 )
 
-type playersRepositoryImpl struct {
+type playerRepositoryImpl struct {
 	DB *sql.DB
 }
 
-func NewCommentRepository(db *sql.DB) PlayerRepository {
-	return &playersRepositoryImpl{DB: db}
+func NewPlayerRepository(db *sql.DB) PlayerRepository {
+	return &playerRepositoryImpl{DB: db}
 }
 
-func (repo *playersRepositoryImpl) Insert(ctx context.Context, player entitiy.Player) (entitiy.Player, error) {
+func (repo *playerRepositoryImpl) Insert(ctx context.Context, player entitiy.Player) (entitiy.Player, error) {
 	script := "INSERT INTO comments(name, nickname, gender) VALUES (?, ?)"
 	result, err := repo.DB.ExecContext(ctx, script, player.Name, player.Nickname, player.Gender)
 	if err != nil {
@@ -30,7 +30,7 @@ func (repo *playersRepositoryImpl) Insert(ctx context.Context, player entitiy.Pl
 	return player, nil
 }
 
-func (repo *playersRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Player, error) {
+func (repo *playerRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Player, error) {
 	script := "SELECT id, name, nickname, gender FROM  WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	player := entitiy.Player{}
@@ -49,7 +49,7 @@ func (repo *playersRepositoryImpl) FindById(ctx context.Context, id int32) (enti
 	}
 }
 
-func (repo *playersRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Player, error) {
+func (repo *playerRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Player, error) {
 	script := "SELECT id, name, nickname, gender FROM players"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
@@ -65,21 +65,29 @@ func (repo *playersRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Playe
 	return players, nil
 }
 
-func (repo *playersRepositoryImpl) Update(ctx context.Context, player entitiy.Player) (entitiy.Player, error) {
-	script := "UPDATE players SET Id = ? ,Name= ?,Nickname= ? ,Gender = ?"
-	result, err := repo.DB.ExecContext(ctx, script, player.Id, player.Name, player.Nickname, player.Gender)
+func (repo *playerRepositoryImpl) Update(ctx context.Context, player *entitiy.Player) (*entitiy.Player, error) {
+	script := "SELECT players Nickname = ?, WHERE id = ?"
+	rows, err := repo.DB.PrepareContext(ctx, script)
 	if err != nil {
 		return player, err
 	}
-	id, err := result.
+	_, err = rows.ExecContext(ctx, player.Name, player.Nickname, player.Id, player.Gender)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return player, nil
 }
 
-func (repo *playersRepositoryImpl) Delete(ctx context.Context) (entitiy.Player, error) {
-	script := "DELETE FROM player WHERE id = ? LIMIT 3"
-	res, err := repo.DB.ExecContext(ctx, script)
-	player := entitiy.Player{}
-	
+func (repo *playerRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
+	script := "DELETE players WHERE id = ? LIMIT 3"
+	rows, err := repo.DB.PrepareContext(ctx, script)
 	if err != nil {
-		return  player, err
+		return false, err
 	}
+	_, err = rows.ExecContext(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
