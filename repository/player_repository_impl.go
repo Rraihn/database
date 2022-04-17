@@ -16,8 +16,8 @@ func NewPlayerRepository(db *sql.DB) PlayerRepository {
 	return &playerRepositoryImpl{DB: db}
 }
 
-func (repo *playerRepositoryImpl) Insert(ctx context.Context, player entitiy.Player) (entitiy.Player, error) {
-	script := "INSERT INTO comments(name, nickname, gender) VALUES (?, ?)"
+func (repo *playerRepositoryImpl) Insert(ctx context.Context, player entitiy.Players) (entitiy.Players, error) {
+	script := "INSERT INTO players(name, nickname, gender) VALUES (?, ?, ?)"
 	result, err := repo.DB.ExecContext(ctx, script, player.Name, player.Nickname, player.Gender)
 	if err != nil {
 		return player, err
@@ -30,10 +30,10 @@ func (repo *playerRepositoryImpl) Insert(ctx context.Context, player entitiy.Pla
 	return player, nil
 }
 
-func (repo *playerRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Player, error) {
+func (repo *playerRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Players, error) {
 	script := "SELECT id, name, nickname, gender FROM  WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
-	player := entitiy.Player{}
+	player := entitiy.Players{}
 
 	if err != nil {
 		return player, err
@@ -49,23 +49,23 @@ func (repo *playerRepositoryImpl) FindById(ctx context.Context, id int32) (entit
 	}
 }
 
-func (repo *playerRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Player, error) {
+func (repo *playerRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Players, error) {
 	script := "SELECT id, name, nickname, gender FROM players"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var players []entitiy.Player
+	var players []entitiy.Players
 	for rows.Next() {
-		player := entitiy.Player{}
+		player := entitiy.Players{}
 		rows.Scan(&player.Id, &player.Name, &player.Nickname, &player.Gender)
 		players = append(players, player)
 	}
 	return players, nil
 }
 
-func (repo *playerRepositoryImpl) Update(ctx context.Context, player *entitiy.Player) (*entitiy.Player, error) {
+func (repo *playerRepositoryImpl) Update(ctx context.Context, player *entitiy.Players) (*entitiy.Players, error) {
 	script := "SELECT players Nickname = ?, WHERE id = ?"
 	rows, err := repo.DB.PrepareContext(ctx, script)
 	if err != nil {

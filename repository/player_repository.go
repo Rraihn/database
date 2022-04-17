@@ -6,9 +6,9 @@ import (
 )
 
 type PlayerRepository interface {
-	Insert(ctx context.Context, player entitiy.Player) (entitiy.Player, error)
-	FindById(ctx context.Context, id int32) (entitiy.Player, error)
-	FindAll(ctx context.Context) ([]entitiy.Player, error)
-	Update(ctx context.Context, player *entitiy.Player) (*entitiy.Player, error)
+	Insert(ctx context.Context, player entitiy.Players) (entitiy.Players, error)
+	FindById(ctx context.Context, id int32) (entitiy.Players, error)
+	FindAll(ctx context.Context) ([]entitiy.Players, error)
+	Update(ctx context.Context, player *entitiy.Players) (*entitiy.Players, error)
 	Delete(ctx context.Context, id int32) (bool, error)
 }

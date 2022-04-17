@@ -26,7 +26,7 @@ func TestCommentInsert(t *testing.T) {
 func TestFindById(t *testing.T) {
 	commentRepository := NewCommentRepository(go_database.GetConnection())
 
-	comment, err := commentRepository.FindById(context.Background(), 3)
+	comment, err := commentRepository.FindById(context.Background(), 29)
 	if err != nil {
 		panic(err)
 	}
