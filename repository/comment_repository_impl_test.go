@@ -23,17 +23,17 @@ func TestCommentInsert(t *testing.T) {
 	fmt.Println(result)
 }
 
-func TestFindById(t *testing.T) {
+func TestCommentFindById(t *testing.T) {
 	commentRepository := NewCommentRepository(go_database.GetConnection())
 
-	comment, err := commentRepository.FindById(context.Background(), 29)
+	comment, err := commentRepository.FindById(context.Background(), 2)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(comment)
 }
 
-func TestFindAll(t *testing.T) {
+func TestCommentFindAll(t *testing.T) {
 	commentRepository := NewCommentRepository(go_database.GetConnection())
 
 	comments, err := commentRepository.FindAll(context.Background())

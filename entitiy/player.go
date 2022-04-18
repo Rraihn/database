@@ -1,6 +1,6 @@
 package entitiy
 
-type Player struct {
+type Players struct {
 	Id       int32
 	Name     string
 	Nickname string

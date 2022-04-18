@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) PlayerRepository {
 }
 
 func (repo *userRepositoryImpl) Insert(ctx context.Context, user entitiy.Users) (entitiy.Users, error) {
-	script := "INSERT INTO players(username, password) VALUES (?, ?, ?)"
+	script := "INSERT INTO users(username, password) VALUES (?, ?, ?)"
 	result, err := repo.DB.ExecContext(ctx, script, user.Username, user.Password)
 	if err != nil {
 		return user, err
@@ -31,7 +31,7 @@ func (repo *userRepositoryImpl) Insert(ctx context.Context, user entitiy.Users) 
 }
 
 func (repo *userRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Users, error) {
-	script := "SELECT username, password FROM  WHERE id = ? LIMIT 3"
+	script := "SELECT username, password FROM users WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	user := entitiy.Users{}
 
@@ -66,7 +66,7 @@ func (repo *userRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Users, e
 }
 
 func (repo *userRepositoryImpl) Update(ctx context.Context, user *entitiy.Users) (*entitiy.Users, error) {
-	script := "SELECT players Nickname = ?, WHERE id = ?"
+	script := "SELECT users Nickname = ?, WHERE id = ?"
 	rows, err := repo.DB.PrepareContext(ctx, script)
 	if err != nil {
 		return user, err
@@ -80,7 +80,7 @@ func (repo *userRepositoryImpl) Update(ctx context.Context, user *entitiy.Users)
 }
 
 func (repo *userRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
-	script := "DELETE players WHERE id = ? LIMIT 3"
+	script := "DELETE users WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.PrepareContext(ctx, script)
 	if err != nil {
 		return false, err

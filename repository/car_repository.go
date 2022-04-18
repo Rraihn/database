@@ -10,5 +10,5 @@ type CarRepository interface {
 	FindById(ctx context.Context, id int32) (entitiy.Cars, error)
 	FindAll(ctx context.Context) ([]entitiy.Cars, error)
 	Update(ctx context.Context, car *entitiy.Cars) (*entitiy.Cars, error)
-	Delete(ctx context.Context, id int32) (bool, error)
+	Delete(ctx context.Context, car entitiy.Cars) (entitiy.Cars, error)
 }

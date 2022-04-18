@@ -9,11 +9,15 @@ import (
 )
 
 type itemRepositoryImpl struct {
-	DB sql.DB
+	DB *sql.DB
+}
+
+func NewItemRepository(db *sql.DB) ItemRepository {
+	return &itemRepositoryImpl{DB: db}
 }
 
 func (repo *itemRepositoryImpl) Insert(ctx context.Context, item entitiy.Items) (entitiy.Items, error) {
-	script := "INSERT INTO comments(name, qty) VALUES (?, ?)"
+	script := "INSERT INTO items(name, qty) VALUES (?, ?)"
 	result, err := repo.DB.ExecContext(ctx, script, item.Name, item.Qty)
 	if err != nil {
 		return item, err
@@ -27,7 +31,7 @@ func (repo *itemRepositoryImpl) Insert(ctx context.Context, item entitiy.Items) 
 }
 
 func (repo *itemRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Items, error) {
-	script := "SELECT id, name, qty FROM  WHERE id = ? LIMIT 3"
+	script := "SELECT id, name, qty FROM items WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	item := entitiy.Items{}
 
@@ -73,4 +77,17 @@ func (repo *itemRepositoryImpl) Update(ctx context.Context, item *entitiy.Items)
 	}
 	defer rows.Close()
 	return item, nil
+}
+
+func (repo itemRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
+	script := "DELETE item WHERE id = ? LIMIT 1"
+	rows, err := repo.DB.PrepareContext(ctx, script)
+	if err != nil {
+		return false, err
+	}
+	_, err = rows.ExecContext(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

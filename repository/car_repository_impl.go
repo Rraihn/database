@@ -12,13 +12,13 @@ type carRepositoryImpl struct {
 	DB *sql.DB
 }
 
-func newCarRepositoryImpl(db *sql.DB) carRepositoryImpl {
+func NewCarRepository(db *sql.DB) carRepositoryImpl {
 	return carRepositoryImpl{DB: db}
 }
 
 func (repo carRepositoryImpl) Insert(ctx context.Context, car entitiy.Cars) (entitiy.Cars, error) {
 	script := "INSERT INTO cars(name, merk) VALUES (?, ?)"
-	result, err := repo.DB.ExecContext(ctx, script, car.Id, car.Name, car.Merk)
+	result, err := repo.DB.ExecContext(ctx, script, car.Name, car.Merk)
 	if err != nil {
 		return car, err
 	}
@@ -31,7 +31,7 @@ func (repo carRepositoryImpl) Insert(ctx context.Context, car entitiy.Cars) (ent
 }
 
 func (repo carRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Cars, error) {
-	script := "SELECT id, name, merk FROM  WHERE id = ? LIMIT 3"
+	script := "SELECT id, name, merk FROM cars WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	car := entitiy.Cars{}
 
@@ -50,7 +50,7 @@ func (repo carRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.C
 }
 
 func (repo carRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Cars, error) {
-	script := "SELECT id, name, merk FROM players"
+	script := "SELECT id, name, merk FROM cars"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
 		return nil, err
@@ -79,15 +79,15 @@ func (repo carRepositoryImpl) Update(ctx context.Context, car *entitiy.Cars) (*e
 	return car, nil
 }
 
-func (repo carRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
+func (repo carRepositoryImpl) Delete(ctx context.Context, cars entitiy.Cars) (entitiy.Cars, error) {
 	script := "DELETE cars WHERE id = ? LIMIT 3"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+	rows, err := repo.DB.ExecContext(ctx, script, cars.Id)
 	if err != nil {
-		return false, err
+		return cars, err
 	}
-	_, err = rows.ExecContext(ctx, id)
+	_, err = rows.RowsAffected()
 	if err != nil {
-		return false, err
+		return cars, err
 	}
-	return true, nil
+	return cars, nil
 }

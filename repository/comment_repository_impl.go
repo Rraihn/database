@@ -30,7 +30,7 @@ func (repository *commentRepositoryImpl) Insert(ctx context.Context, comment ent
 }
 
 func (repository *commentRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Comments, error) {
-	script := "SELECT id, email, comment FROM  WHERE id = ? LIMIT 1"
+	script := "SELECT id, email, comment FROM comments WHERE id = ? LIMIT 1"
 	rows, err := repository.DB.QueryContext(ctx, script, id)
 	comment := entitiy.Comments{}
 

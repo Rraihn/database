@@ -31,7 +31,7 @@ func (repo *playerRepositoryImpl) Insert(ctx context.Context, player entitiy.Pla
 }
 
 func (repo *playerRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Players, error) {
-	script := "SELECT id, name, nickname, gender FROM  WHERE id = ? LIMIT 3"
+	script := "SELECT id, name, nickname, gender FROM players WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	player := entitiy.Players{}
 
