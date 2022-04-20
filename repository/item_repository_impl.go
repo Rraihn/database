@@ -50,7 +50,7 @@ func (repo *itemRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy
 }
 
 func (repo *itemRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Items, error) {
-	script := "SELECT id, name, qty FROM item"
+	script := "SELECT id, name, qty FROM items"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
 		return nil, err
@@ -65,29 +65,32 @@ func (repo *itemRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Items, e
 	return items, nil
 }
 
-func (repo *itemRepositoryImpl) Update(ctx context.Context, item *entitiy.Items) (*entitiy.Items, error) {
-	script := "SELECT item Name = ?, WHERE id = ?"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo *itemRepositoryImpl) Update(ctx context.Context, item entitiy.Items) (entitiy.Items, error) {
+	script := "UPDATE items SET name = ? WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, item.Name, item.Id)
 	if err != nil {
 		return item, err
 	}
-	_, err = rows.ExecContext(ctx, item.Id, item.Id, item.Qty)
+	rowCnt, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return item, err
 	}
-	defer rows.Close()
+	if rowCnt == 0 {
+		return item, err
+	}
 	return item, nil
 }
 
-func (repo itemRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
-	script := "DELETE item WHERE id = ? LIMIT 1"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo itemRepositoryImpl) Delete(ctx context.Context, item entitiy.Items) (entitiy.Items, error) {
+	script := "DELETE FROM items WHERE id = ?"
+
+	result, err := repo.DB.ExecContext(ctx, script, item.Id)
 	if err != nil {
-		return false, err
+		return item, err
 	}
-	_, err = rows.ExecContext(ctx, id)
-	if err != nil {
-		return false, err
+	rowCnt, err := result.RowsAffected()
+	if rowCnt == 0 {
+		return item, err
 	}
-	return true, nil
+	return item, err
 }

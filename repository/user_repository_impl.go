@@ -9,15 +9,15 @@ import (
 )
 
 type userRepositoryImpl struct {
-	DB sql.DB
+	DB *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) PlayerRepository {
-	return &playerRepositoryImpl{DB: db}
+func NewUserRepository(db *sql.DB) UserRepository {
+	return &userRepositoryImpl{DB: db}
 }
 
 func (repo *userRepositoryImpl) Insert(ctx context.Context, user entitiy.Users) (entitiy.Users, error) {
-	script := "INSERT INTO users(username, password) VALUES (?, ?, ?)"
+	script := "INSERT INTO users(username, password) VALUES (?, ?)"
 	result, err := repo.DB.ExecContext(ctx, script, user.Username, user.Password)
 	if err != nil {
 		return user, err
@@ -31,7 +31,7 @@ func (repo *userRepositoryImpl) Insert(ctx context.Context, user entitiy.Users) 
 }
 
 func (repo *userRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Users, error) {
-	script := "SELECT username, password FROM users WHERE id = ? LIMIT 3"
+	script := "SELECT id, username, password FROM users WHERE id = ?"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	user := entitiy.Users{}
 
@@ -65,29 +65,37 @@ func (repo *userRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Users, e
 	return users, nil
 }
 
-func (repo *userRepositoryImpl) Update(ctx context.Context, user *entitiy.Users) (*entitiy.Users, error) {
-	script := "SELECT users Nickname = ?, WHERE id = ?"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo *userRepositoryImpl) Update(ctx context.Context, user entitiy.Users) (entitiy.Users, error) {
+	script := "UPDATE users SET username = ?, password = ? WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, user.Username, user.Password, user.Id)
 	if err != nil {
 		return user, err
 	}
-	_, err = rows.ExecContext(ctx, user.Id, user.Username, user.Password)
+	rowCnt, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return user, err
 	}
-	defer rows.Close()
+	if err != nil {
+		return user, err
+	}
+	if rowCnt == 0 {
+		return user, err
+	}
 	return user, nil
 }
 
-func (repo *userRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
-	script := "DELETE users WHERE id = ? LIMIT 3"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo *userRepositoryImpl) Delete(ctx context.Context, users entitiy.Users) (entitiy.Users, error) {
+	script := "DELETE FROM users WHERE id =?"
+	result, err := repo.DB.ExecContext(ctx, script, users.Id)
 	if err != nil {
-		return false, err
+		return users, err
 	}
-	_, err = rows.ExecContext(ctx, id)
+	rowCnt, err := result.RowsAffected()
 	if err != nil {
-		return false, err
+		return users, err
 	}
-	return true, nil
+	if rowCnt == 0 {
+		return users, err
+	}
+	return users, nil
 }

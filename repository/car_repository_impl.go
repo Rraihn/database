@@ -65,29 +65,31 @@ func (repo carRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Cars, erro
 	return cars, nil
 }
 
-func (repo carRepositoryImpl) Update(ctx context.Context, car *entitiy.Cars) (*entitiy.Cars, error) {
-	script := "SELECT cars name = ?, WHERE id = ?"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo carRepositoryImpl) Update(ctx context.Context, car entitiy.Cars) (entitiy.Cars, error) {
+	script := "UPDATE cars SET name = ?, merk = ? WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, car.Name, car.Merk, car.Id)
 	if err != nil {
 		return car, err
 	}
-	_, err = rows.ExecContext(ctx, car.Id, car.Name, car.Merk)
+	rowCnt, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return car, err
 	}
-	defer rows.Close()
+	if rowCnt == 0 {
+		return car, err
+	}
 	return car, nil
 }
 
-func (repo carRepositoryImpl) Delete(ctx context.Context, cars entitiy.Cars) (entitiy.Cars, error) {
-	script := "DELETE cars WHERE id = ? LIMIT 3"
-	rows, err := repo.DB.ExecContext(ctx, script, cars.Id)
+func (repo carRepositoryImpl) Delete(ctx context.Context, car entitiy.Cars) (entitiy.Cars, error) {
+	script := "DELETE FROM cars WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, car.Id)
 	if err != nil {
-		return cars, err
+		return car, err
 	}
-	_, err = rows.RowsAffected()
-	if err != nil {
-		return cars, err
+	rowCnt, err := result.RowsAffected()
+	if rowCnt == 0 {
+		return car, err
 	}
-	return cars, nil
+	return car, err
 }

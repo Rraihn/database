@@ -31,7 +31,7 @@ func (repo *playerRepositoryImpl) Insert(ctx context.Context, player entitiy.Pla
 }
 
 func (repo *playerRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Players, error) {
-	script := "SELECT id, name, nickname, gender FROM players WHERE id = ? LIMIT 3"
+	script := "SELECT id, name, nickname, gender FROM players WHERE id = ?"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	player := entitiy.Players{}
 
@@ -65,29 +65,32 @@ func (repo *playerRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Player
 	return players, nil
 }
 
-func (repo *playerRepositoryImpl) Update(ctx context.Context, player *entitiy.Players) (*entitiy.Players, error) {
-	script := "SELECT players Nickname = ?, WHERE id = ?"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo *playerRepositoryImpl) Update(ctx context.Context, player entitiy.Players) (entitiy.Players, error) {
+	script := "UPDATE players SET name = ?, nickname = ?, gender = ? WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, player.Name, player.Nickname, player.Gender, player.Id)
 	if err != nil {
 		return player, err
 	}
-	_, err = rows.ExecContext(ctx, player.Name, player.Nickname, player.Id, player.Gender)
+	rowCnt, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return player, nil
 	}
-	defer rows.Close()
+	if rowCnt == 0 {
+		return player, err
+	}
 	return player, nil
 }
 
-func (repo *playerRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
-	script := "DELETE players WHERE id = ? LIMIT 3"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo *playerRepositoryImpl) Delete(ctx context.Context, player entitiy.Players) (entitiy.Players, error) {
+	script := "DELETE FROM players WHERE id = ?"
+
+	result, err := repo.DB.ExecContext(ctx, script, player.Id)
 	if err != nil {
-		return false, err
+		return player, err
 	}
-	_, err = rows.ExecContext(ctx, id)
-	if err != nil {
-		return false, err
+	rowCnt, err := result.RowsAffected()
+	if rowCnt == 0 {
+		return player, err
 	}
-	return true, nil
+	return player, err
 }

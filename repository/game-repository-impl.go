@@ -18,7 +18,7 @@ func NewGameRepositoryImpl(db *sql.DB) gameRepositoryImpl {
 
 func (repo gameRepositoryImpl) Insert(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
 	script := "INSERT INTO games(name, genre) VALUES (?, ?)"
-	result, err := repo.DB.ExecContext(ctx, script, game.Id, game.Name, game.Genre)
+	result, err := repo.DB.ExecContext(ctx, script, game.Name, game.Genre)
 	if err != nil {
 		return game, err
 	}
@@ -50,7 +50,7 @@ func (repo gameRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.
 }
 
 func (repo gameRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Games, error) {
-	script := "SELECT id, name, genre FROM cars"
+	script := "SELECT id, name, genre FROM games"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
 		return nil, err
@@ -65,29 +65,31 @@ func (repo gameRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Games, er
 	return games, nil
 }
 
-func (repo gameRepositoryImpl) Update(ctx context.Context, game *entitiy.Games) (*entitiy.Games, error) {
-	script := "SELECT games name = ?, WHERE id = ?"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo gameRepositoryImpl) Update(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
+	script := "UPDATE games SET name = ?, genre = ? WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, game.Name, game.Genre, game.Id)
 	if err != nil {
 		return game, err
 	}
-	_, err = rows.ExecContext(ctx, game.Id, game.Name, game.Genre)
+	rowCnt, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return game, err
 	}
-	defer rows.Close()
+	if rowCnt == 0 {
+		return game, err
+	}
 	return game, nil
 }
 
-func (repo gameRepositoryImpl) Delete(ctx context.Context, id int32) (bool, error) {
-	script := "DELETE games WHERE id = ? LIMIT 3"
-	rows, err := repo.DB.PrepareContext(ctx, script)
+func (repo gameRepositoryImpl) Delete(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
+	script := "DELETE FROM games WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, game.Id)
 	if err != nil {
-		return false, err
+		return game, err
 	}
-	_, err = rows.ExecContext(ctx, id)
-	if err != nil {
-		return false, err
+	rowCnt, err := result.RowsAffected()
+	if rowCnt == 0 {
+		return game, err
 	}
-	return true, nil
+	return game, err
 }
