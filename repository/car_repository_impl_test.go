@@ -12,8 +12,8 @@ func TestCarInsert(t *testing.T) {
 	carRepository := NewCarRepository(go_database.GetConnection())
 	ctx := context.Background()
 	car := entitiy.Cars{
-		Name: "SupraX",
-		Merk: "aToyot",
+		Name: "Discovery Evoque",
+		Merk: "Range Rover",
 	}
 	result, err := carRepository.Insert(ctx, car)
 	if err != nil {
@@ -46,7 +46,7 @@ func TestCarFindAll(t *testing.T) {
 
 func TestCarUpdate(t *testing.T) {
 	carRepository := NewCarRepository(go_database.GetConnection())
-	car, err := carRepository.Update(context.Background(), entitiy.Cars{Name: "unicorn", Merk: "Hoonigan", Id: 1})
+	car, err := carRepository.Update(context.Background(), entitiy.Cars{Name: "unicorn special Edition", Merk: "Hoonigan", Id: 1})
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func TestCarUpdate(t *testing.T) {
 
 func TestCarDelete(t *testing.T) {
 	carRepository := NewCarRepository(go_database.GetConnection())
-	car, err := carRepository.Delete(context.Background(), entitiy.Cars{Id: 4})
+	car, err := carRepository.Delete(context.Background(), entitiy.Cars{Id: 1})
 	if err != nil {
 		panic(err)
 	}

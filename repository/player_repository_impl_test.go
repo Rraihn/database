@@ -14,7 +14,7 @@ func TestInsertPlayer(t *testing.T) {
 	players := entitiy.Players{
 		Name:     "Aqias",
 		Nickname: "Beast",
-		Gender:   "boy",
+		Gender:   "boys",
 	}
 	result, err := insertPlayer.Insert(ctx, players)
 	if err != nil {
@@ -25,7 +25,7 @@ func TestInsertPlayer(t *testing.T) {
 func TestPlayerFindById(t *testing.T) {
 	playerRepository := NewPlayerRepository(go_database.GetConnection())
 
-	result, err := playerRepository.FindById(context.Background(), 2)
+	result, err := playerRepository.FindById(context.Background(), 5)
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ func TestPlayerFindAll(t *testing.T) {
 func TestPlayerUpdate(t *testing.T) {
 	playerRepository := NewPlayerRepository(go_database.GetConnection())
 
-	result, err := playerRepository.Update(context.Background(), entitiy.Players{Name: "Raihan", Nickname: "tequila", Gender: "boys", Id: 2})
+	result, err := playerRepository.Update(context.Background(), entitiy.Players{Name: "Khansa", Nickname: "Caca", Gender: "Girls", Id: 1})
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func TestPlayerUpdate(t *testing.T) {
 func TestPlayerDelete(t *testing.T) {
 	playerRepository := NewPlayerRepository(go_database.GetConnection())
 
-	result, err := playerRepository.Delete(context.Background(), entitiy.Players{Id: 3})
+	result, err := playerRepository.Delete(context.Background(), entitiy.Players{Id: 5})
 	if err != nil {
 		panic(err)
 	}

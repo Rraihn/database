@@ -12,8 +12,8 @@ func TestUserInsert(t *testing.T) {
 	userRepository := NewUserRepository(go_database.GetConnection())
 	ctx := context.Background()
 	user := entitiy.Users{
-		Username: "Raihan Rio",
-		Password: "satu-78",
+		Username: "Rio",
+		Password: "Dos-78",
 	}
 	result, err := userRepository.Insert(ctx, user)
 	if err != nil {
@@ -32,5 +32,28 @@ func TestUserFindById(t *testing.T) {
 }
 
 func TestUserFindAll(t *testing.T) {
+	userRepository := NewUserRepository(go_database.GetConnection())
+	result, err := userRepository.FindAll(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(result)
+}
 
+func TestUserUpdate(t *testing.T) {
+	userRepository := NewUserRepository(go_database.GetConnection())
+	result, err := userRepository.Update(context.Background(), entitiy.Users{Username: "Hans", Password: "jojo", Id: 2})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(result)
+}
+
+func TestUserDelete(t *testing.T) {
+	userRepository := NewUserRepository(go_database.GetConnection())
+	result, err := userRepository.Delete(context.Background(), entitiy.Users{Id: 4})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(result)
 }

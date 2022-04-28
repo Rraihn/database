@@ -16,7 +16,7 @@ func NewGameRepositoryImpl(db *sql.DB) gameRepositoryImpl {
 	return gameRepositoryImpl{DB: db}
 }
 
-func (repo gameRepositoryImpl) Insert(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
+func (repo *gameRepositoryImpl) Insert(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
 	script := "INSERT INTO games(name, genre) VALUES (?, ?)"
 	result, err := repo.DB.ExecContext(ctx, script, game.Name, game.Genre)
 	if err != nil {
@@ -30,7 +30,7 @@ func (repo gameRepositoryImpl) Insert(ctx context.Context, game entitiy.Games) (
 	return game, nil
 }
 
-func (repo gameRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Games, error) {
+func (repo *gameRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.Games, error) {
 	script := "SELECT id, name, genre FROM games WHERE id = ? LIMIT 3"
 	rows, err := repo.DB.QueryContext(ctx, script, id)
 	game := entitiy.Games{}
@@ -49,7 +49,7 @@ func (repo gameRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy.
 	}
 }
 
-func (repo gameRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Games, error) {
+func (repo *gameRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Games, error) {
 	script := "SELECT id, name, genre FROM games"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
@@ -65,7 +65,7 @@ func (repo gameRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Games, er
 	return games, nil
 }
 
-func (repo gameRepositoryImpl) Update(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
+func (repo *gameRepositoryImpl) Update(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
 	script := "UPDATE games SET name = ?, genre = ? WHERE id = ?"
 	result, err := repo.DB.ExecContext(ctx, script, game.Name, game.Genre, game.Id)
 	if err != nil {
@@ -81,7 +81,7 @@ func (repo gameRepositoryImpl) Update(ctx context.Context, game entitiy.Games) (
 	return game, nil
 }
 
-func (repo gameRepositoryImpl) Delete(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
+func (repo *gameRepositoryImpl) Delete(ctx context.Context, game entitiy.Games) (entitiy.Games, error) {
 	script := "DELETE FROM games WHERE id = ?"
 	result, err := repo.DB.ExecContext(ctx, script, game.Id)
 	if err != nil {
