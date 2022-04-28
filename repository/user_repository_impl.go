@@ -50,7 +50,7 @@ func (repo *userRepositoryImpl) FindById(ctx context.Context, id int32) (entitiy
 }
 
 func (repo *userRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Users, error) {
-	script := "SELECT id, username, passwword FROM users"
+	script := "SELECT id, username, password FROM users"
 	rows, err := repo.DB.QueryContext(ctx, script)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (repo *userRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Users, e
 	var users []entitiy.Users
 	for rows.Next() {
 		user := entitiy.Users{}
-		rows.Scan(&user.Id, &user.Username)
+		rows.Scan(&user.Id, &user.Username, &user.Password)
 		users = append(users, user)
 	}
 	return users, nil
@@ -72,9 +72,6 @@ func (repo *userRepositoryImpl) Update(ctx context.Context, user entitiy.Users) 
 		return user, err
 	}
 	rowCnt, err := result.RowsAffected()
-	if err != nil {
-		return user, err
-	}
 	if err != nil {
 		return user, err
 	}
@@ -91,9 +88,6 @@ func (repo *userRepositoryImpl) Delete(ctx context.Context, users entitiy.Users)
 		return users, err
 	}
 	rowCnt, err := result.RowsAffected()
-	if err != nil {
-		return users, err
-	}
 	if rowCnt == 0 {
 		return users, err
 	}

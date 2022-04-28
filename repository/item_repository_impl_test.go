@@ -12,8 +12,8 @@ func TestItemInsert(t *testing.T) {
 	itemRepository := NewItemRepository(go_database.GetConnection())
 	ctx := context.Background()
 	items := entitiy.Items{
-		Name: "Phone",
-		Qty:  15,
+		Name: "Orange",
+		Qty:  5,
 	}
 	result, err := itemRepository.Insert(ctx, items)
 	if err != nil {
@@ -25,7 +25,7 @@ func TestItemInsert(t *testing.T) {
 func TestItemFindById(t *testing.T) {
 	itemRepository := NewItemRepository(go_database.GetConnection())
 
-	items, err := itemRepository.FindById(context.Background(), 1)
+	items, err := itemRepository.FindById(context.Background(), 4)
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ func TestItemFindAll(t *testing.T) {
 func TestItemUpdate(t *testing.T) {
 	ItemRepository := NewItemRepository(go_database.GetConnection())
 
-	items, err := ItemRepository.Update(context.Background(), entitiy.Items{Name: "Sosis", Id: 1})
+	items, err := ItemRepository.Update(context.Background(), entitiy.Items{Name: "Berries", Qty: 5, Id: 3})
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func TestItemUpdate(t *testing.T) {
 func TestItemDelete(t *testing.T) {
 	ItemRepository := NewItemRepository(go_database.GetConnection())
 
-	items, err := ItemRepository.Delete(context.Background(), entitiy.Items{Id: 2})
+	items, err := ItemRepository.Delete(context.Background(), entitiy.Items{Id: 1})
 	if err != nil {
 		panic(err)
 	}

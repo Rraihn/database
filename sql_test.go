@@ -54,7 +54,7 @@ func TestQuarySqlComplex(t *testing.T) {
 
 	ctx := context.Background()
 
-	script := "SELECT id, name, balance, rating, birthDate, married, createdAt FROM customers"
+	script := "SELECT id, name, balance, email, rating, birthDate, married, createdAt FROM customers"
 	rows, err := db.QueryContext(ctx, script)
 	if err != nil {
 		panic(err)
@@ -64,19 +64,19 @@ func TestQuarySqlComplex(t *testing.T) {
 	for rows.Next() {
 		var id, name string
 		var email sql.NullString
-		var balance int
+		var balance int32
 		var rating float64
 		var birthDate sql.NullTime
 		var married bool
 		var createdAt time.Time
 
-		err := rows.Scan(&id, &name, &email, &balance, &rating, &birthDate, &married, &createdAt)
+		err = rows.Scan(&id, &name, &email, &balance, &rating, &birthDate, &married, &createdAt)
 		if err != nil {
 			panic(err)
 		}
 		fmt.Println("===============")
-		fmt.Println("Nama:", name)
 		fmt.Println("Id:", id)
+		fmt.Println("Nama:", name)
 		if email.Valid {
 			fmt.Println("Email:", email.String)
 		}

@@ -12,7 +12,7 @@ func TestGameInsert(t *testing.T) {
 	gameRepository := NewGameRepositoryImpl(go_database.GetConnection())
 	ctx := context.Background()
 	games := entitiy.Games{
-		Name:  "GTA Chinatown,",
+		Name:  "GTA Online,",
 		Genre: "Open World",
 	}
 	result, err := gameRepository.Insert(ctx, games)
@@ -25,7 +25,7 @@ func TestGameInsert(t *testing.T) {
 func TestGameFindById(t *testing.T) {
 	gameRepository := NewGameRepositoryImpl(go_database.GetConnection())
 
-	games, err := gameRepository.FindById(context.Background(), 1)
+	games, err := gameRepository.FindById(context.Background(), 2)
 	if err != err {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ func TestGameFindAll(t *testing.T) {
 func TestGameUpdate(t *testing.T) {
 	gameRepository := NewGameRepositoryImpl(go_database.GetConnection())
 
-	games, err := gameRepository.Update(context.Background(), entitiy.Games{Name: "Lego Batman", Genre: "Lego RPG", Id: 2})
+	games, err := gameRepository.Update(context.Background(), entitiy.Games{Name: "Lego StarWars", Genre: "Lego RPG", Id: 2})
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ func TestGameUpdate(t *testing.T) {
 func TestGameDelete(t *testing.T) {
 	gameRepository := NewGameRepositoryImpl(go_database.GetConnection())
 
-	games, err := gameRepository.Delete(context.Background(), entitiy.Games{Id: 5})
+	games, err := gameRepository.Delete(context.Background(), entitiy.Games{Id: 1})
 	if err != nil {
 		panic(err)
 	}

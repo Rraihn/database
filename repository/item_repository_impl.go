@@ -66,8 +66,8 @@ func (repo *itemRepositoryImpl) FindAll(ctx context.Context) ([]entitiy.Items, e
 }
 
 func (repo *itemRepositoryImpl) Update(ctx context.Context, item entitiy.Items) (entitiy.Items, error) {
-	script := "UPDATE items SET name = ? WHERE id = ?"
-	result, err := repo.DB.ExecContext(ctx, script, item.Name, item.Id)
+	script := "UPDATE items SET name = ?, qty = ? WHERE id = ?"
+	result, err := repo.DB.ExecContext(ctx, script, item.Name, item.Qty, item.Id)
 	if err != nil {
 		return item, err
 	}
